@@ -1,0 +1,193 @@
+name: crashlytics-linear-sync
+version: 0.1.0
+specVersion: v1beta
+
+displayName: Crashlytics to Linear Issue Sync
+description: >-
+  Automatically creates Linear issues from Firebase Crashlytics alerts for 
+  new fatal issues, non-fatal issues, regressions, and velocity alerts.
+
+license: Apache-2.0
+
+author:
+  authorName: Benjamin Richards
+  email: ${PARAM_AUTHOR_EMAIL}
+  url: https://github.com/${PARAM_GITHUB_USERNAME}
+
+contributors:
+  - authorName: Benjamin Richards
+
+sourceUrl: https://github.com/${PARAM_GITHUB_USERNAME}/crashlytics-to-linear
+
+billingRequired: false
+
+params:
+  - param: LINEAR_API_KEY
+    label: Linear API Key
+    description: >-
+      Your Linear API key for authentication. Create one at 
+      https://linear.app/settings/api
+    type: secret
+    required: true
+
+  - param: LINEAR_TEAM_ID
+    label: Linear Team ID
+    description: >-
+      The ID of the Linear team where issues will be created. 
+      You can find this in Linear's team settings.
+    type: string
+    required: true
+    
+  - param: CREATE_FOR_FATAL_ISSUES
+    label: Create issues for fatal crashes
+    description: >-
+      Whether to create Linear issues when new fatal crashes are detected
+    type: select
+    options:
+      - label: Yes
+        value: true
+      - label: No
+        value: false
+    default: true
+    required: true
+
+  - param: CREATE_FOR_NON_FATAL_ISSUES
+    label: Create issues for non-fatal issues
+    description: >-
+      Whether to create Linear issues when new non-fatal issues are detected
+    type: select
+    options:
+      - label: Yes
+        value: true
+      - label: No
+        value: false
+    default: true
+    required: true
+
+  - param: CREATE_FOR_REGRESSIONS
+    label: Create issues for regressions
+    description: >-
+      Whether to create Linear issues when regression alerts are triggered
+    type: select
+    options:
+      - label: Yes
+        value: true
+      - label: No
+        value: false
+    default: true
+    required: true
+
+  - param: CREATE_FOR_VELOCITY_ALERTS
+    label: Create issues for velocity alerts
+    description: >-
+      Whether to create Linear issues when velocity alerts are triggered
+    type: select
+    options:
+      - label: Yes
+        value: true
+      - label: No
+        value: false
+    default: true
+    required: true
+
+  - param: LINEAR_ISSUE_PRIORITY
+    label: Default Linear issue priority
+    description: >-
+      Default priority for created Linear issues (0=No priority, 1=Urgent, 2=High, 3=Normal, 4=Low)
+    type: select
+    options:
+      - label: Urgent
+        value: 1
+      - label: High
+        value: 2
+      - label: Normal
+        value: 3
+      - label: Low
+        value: 4
+    default: 2
+    required: true
+
+  - param: LINEAR_LABEL_IDS
+    label: Linear Label IDs (optional)
+    description: >-
+      Comma-separated list of Linear label IDs to apply to created issues (optional)
+    type: string
+    required: false
+
+  - param: AUTHOR_EMAIL
+    label: Author Email
+    description: Your email address
+    type: string
+    required: false
+    default: ""
+    
+  - param: GITHUB_USERNAME
+    label: GitHub Username
+    description: Your GitHub username
+    type: string
+    required: false
+    default: ""
+
+resources:
+  - name: handleNewFatalIssue
+    type: firebaseextensions.v1beta.v2function
+    description: >-
+      Cloud Function triggered by new fatal Crashlytics issues to create Linear issues
+    properties:
+      location: ${LOCATION}
+      eventTrigger:
+        eventType: google.firebase.crashlytics.issue.v1.onNewFatalIssue
+        channel: projects/${PROJECT_ID}/locations/global/channels/firebase
+      runtime: nodejs18
+      
+  - name: handleNewNonfatalIssue
+    type: firebaseextensions.v1beta.v2function
+    description: >-
+      Cloud Function triggered by new non-fatal Crashlytics issues to create Linear issues
+    properties:
+      location: ${LOCATION}
+      eventTrigger:
+        eventType: google.firebase.crashlytics.issue.v1.onNewNonfatalIssue
+        channel: projects/${PROJECT_ID}/locations/global/channels/firebase
+      runtime: nodejs18
+      
+  - name: handleRegressionAlert
+    type: firebaseextensions.v1beta.v2function
+    description: >-
+      Cloud Function triggered by Crashlytics regression alerts to create Linear issues
+    properties:
+      location: ${LOCATION}
+      eventTrigger:
+        eventType: google.firebase.crashlytics.issue.v1.onRegression
+        channel: projects/${PROJECT_ID}/locations/global/channels/firebase
+      runtime: nodejs18
+      
+  - name: handleVelocityAlert
+    type: firebaseextensions.v1beta.v2function
+    description: >-
+      Cloud Function triggered by Crashlytics velocity alerts to create Linear issues
+    properties:
+      location: ${LOCATION}
+      eventTrigger:
+        eventType: google.firebase.crashlytics.issue.v1.onVelocityAlert
+        channel: projects/${PROJECT_ID}/locations/global/channels/firebase
+      runtime: nodejs18
+
+apis:
+  - apiName: eventarc.googleapis.com
+    reason: Required for receiving Firebase Alert events
+
+roles:
+  - role: eventarc.eventReceiver
+    reason: Allows the extension to receive Firebase Alert events
+
+events:
+  - type: crashlytics-linear-sync.v1.issue-created
+    description: >-
+      Occurs when a Linear issue is successfully created from a Crashlytics alert.
+      The event will contain the Linear issue ID and URL.
+
+  - type: crashlytics-linear-sync.v1.issue-creation-failed
+    description: >-
+      Occurs when creating a Linear issue from a Crashlytics alert fails.
+      The event will contain error details.
