@@ -90,7 +90,7 @@ This extension uses the following Firebase services which may have associated co
 
 ## Support
 
-For issues, feature requests, or contributions, please visit the [GitHub repository](https://github.com/your-username/crashlytics-to-linear).
+For issues, feature requests, or contributions, please visit the [GitHub repository](https://github.com/benlrichards/crashlytics-to-linear).
 
 ## License
 

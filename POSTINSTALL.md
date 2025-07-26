@@ -78,6 +78,6 @@ To prevent alert fatigue:
 
 ## Need Help?
 
-- **Extension Issues**: [GitHub Repository](https://github.com/your-username/crashlytics-to-linear)
+- **Extension Issues**: [GitHub Repository](https://github.com/benlrichards/crashlytics-to-linear)
 - **Crashlytics Help**: [Firebase Crashlytics Docs](https://firebase.google.com/docs/crashlytics)
 - **Linear API**: [Linear API Docs](https://developers.linear.app/docs)

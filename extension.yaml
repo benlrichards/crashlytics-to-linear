@@ -12,12 +12,12 @@ license: Apache-2.0
 author:
   authorName: Benjamin Richards
   email: ${PARAM_AUTHOR_EMAIL}
-  url: https://github.com/${PARAM_GITHUB_USERNAME}
+  url: https://github.com/benlrichards
 
 contributors:
   - authorName: Benjamin Richards
 
-sourceUrl: https://github.com/${PARAM_GITHUB_USERNAME}/crashlytics-to-linear
+sourceUrl: https://github.com/benlrichards/crashlytics-to-linear
 
 billingRequired: false
 
@@ -126,7 +126,7 @@ params:
     description: Your GitHub username
     type: string
     required: false
-    default: ""
+    default: "benlrichards"
 
 resources:
   - name: handleNewFatalIssue
